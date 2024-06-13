@@ -231,7 +231,7 @@ impl Run {
             .filter(|(_, v)| v.0 == Either::Right(false))
             .map(|(k, _)| k)
             .collect::<HashSet<_>>();
-        let env: BTreeMap<String, String> = env
+        let mut env: BTreeMap<String, String> = env
             .iter()
             .chain(string_env)
             .filter(|(k, _)| !rm_env.contains(k))
@@ -241,6 +241,7 @@ impl Run {
         let timer = std::time::Instant::now();
 
         if let Some(file) = &task.file {
+            env.insert("MISE_TASK_FILEPATH".into(), file.display().to_string());
             self.exec_file(file, task, &env, &prefix)?;
         } else {
             for (i, cmd) in task.run.iter().enumerate() {
